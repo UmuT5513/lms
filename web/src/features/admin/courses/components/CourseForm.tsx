@@ -22,6 +22,8 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
   const [tagsText, setTagsText] = useState(course?.tags.join(', ') ?? '');
   const [accessMode, setAccessMode] = useState(course?.accessMode ?? 'SEQUENTIAL');
   const [status, setStatus] = useState(course?.status ?? 'DRAFT');
+  // TL cinsinden metin; boş veya 0 = ücretsiz. Sunucuya kuruş olarak gider.
+  const [priceText, setPriceText] = useState(course?.priceKurus ? (course.priceKurus / 100).toFixed(2) : '');
   // Eğitmen seçimi yalnızca oluşturmada (kurs yönetimi ADMIN'e özeldir).
   const isCreate = !course;
   const { pool } = useAssignableInstructors();
@@ -47,6 +49,7 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
       tags,
       accessMode,
       status,
+      priceKurus: Math.round(Number(priceText.replace(',', '.') || '0') * 100),
       ...(isCreate && instructorIds.length > 0 ? { instructorIds } : {}),
     });
   };
@@ -151,6 +154,22 @@ export function CourseForm({ course, saving, onCancel, onSubmit }: CourseFormPro
             <option value="DRAFT">Taslak</option>
             <option value="PUBLISHED">Yayınlandı</option>
           </select>
+        </label>
+
+        <label className={styles.field}>
+          <Text role="label-md" as="span" tone="muted">
+            Fiyat (TL)
+          </Text>
+          <input
+            className={styles.input}
+            type="number"
+            min="0"
+            step="0.01"
+            inputMode="decimal"
+            value={priceText}
+            onChange={(event) => setPriceText(event.target.value)}
+            placeholder="Boş = ücretsiz"
+          />
         </label>
       </div>
 

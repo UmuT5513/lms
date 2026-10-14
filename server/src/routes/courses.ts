@@ -19,6 +19,7 @@ interface CreateCourseBody {
   level: string;
   tags: string[];
   accessMode: 'SEQUENTIAL' | 'FREE';
+  priceKurus?: number;
   instructorIds?: string[];
 }
 
@@ -38,6 +39,7 @@ function toPublicCourse(course: {
   tags: string;
   accessMode: string;
   status: string;
+  priceKurus: number;
   instructors: InstructorRow[];
 }) {
   return {
@@ -49,6 +51,7 @@ function toPublicCourse(course: {
     tags: course.tags ? course.tags.split(',') : [],
     accessMode: course.accessMode,
     status: course.status,
+    priceKurus: course.priceKurus,
     instructors: toPublicInstructors(course.instructors),
   };
 }
@@ -61,6 +64,13 @@ interface UpdateCourseBody {
   tags?: string[];
   accessMode?: 'SEQUENTIAL' | 'FREE';
   status?: 'DRAFT' | 'PUBLISHED';
+  priceKurus?: number;
+}
+
+function assertValidPrice(priceKurus: unknown) {
+  if (priceKurus !== undefined && (!Number.isInteger(priceKurus) || (priceKurus as number) < 0)) {
+    throw new AppError('INVALID_PRICE', 'Fiyat sıfır veya pozitif bir tam sayı (kuruş) olmalıdır.', 400);
+  }
 }
 
 export function registerCourseRoutes(app: FastifyInstance) {
@@ -145,7 +155,8 @@ export function registerCourseRoutes(app: FastifyInstance) {
     '/api/v1/courses',
     { preHandler: [requireAuth, requireRole('INSTRUCTOR', 'ADMIN')] },
     async (request, reply) => {
-      const { title, description, category, level, tags, accessMode, instructorIds } = request.body;
+      const { title, description, category, level, tags, accessMode, priceKurus, instructorIds } = request.body;
+      assertValidPrice(priceKurus);
       let assigned: string[];
       if (request.user!.role === 'ADMIN') {
         const ids = [...new Set(instructorIds ?? [])];
@@ -162,6 +173,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
           level,
           tags: tags.join(','),
           accessMode,
+          ...(priceKurus !== undefined ? { priceKurus } : {}),
           instructors: {
             create: assigned.map((userId, index) => ({ userId, position: index + 1 })),
           },
@@ -182,7 +194,8 @@ export function registerCourseRoutes(app: FastifyInstance) {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
       await assertCanManageCourse(request.user, course.id);
-      const { title, description, category, level, tags, accessMode, status } = request.body;
+      const { title, description, category, level, tags, accessMode, status, priceKurus } = request.body;
+      assertValidPrice(priceKurus);
       const updated = await prisma.course.update({
         where: { id: course.id },
         data: {
@@ -193,6 +206,7 @@ export function registerCourseRoutes(app: FastifyInstance) {
           ...(tags !== undefined ? { tags: tags.join(',') } : {}),
           ...(accessMode !== undefined ? { accessMode } : {}),
           ...(status !== undefined ? { status } : {}),
+          ...(priceKurus !== undefined ? { priceKurus } : {}),
         },
         include: { instructors: instructorsInclude },
       });

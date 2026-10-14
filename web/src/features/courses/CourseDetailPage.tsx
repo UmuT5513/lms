@@ -4,6 +4,7 @@ import { PageContainer } from '../../layout/PageContainer';
 import { useCurrentUser } from '../../data/useCurrentUser';
 import { CourseComments } from './CourseComments';
 import { CourseInstructors } from './CourseInstructors';
+import { PurchaseButton } from '../payments';
 import { useCourseDetail } from './useCourseDetail';
 import { CONTENT_TYPE_BADGE_TONES, CONTENT_TYPE_ICONS, CONTENT_TYPE_LABELS } from './contentType';
 import styles from './CourseDetailPage.module.css';
@@ -127,11 +128,17 @@ export function CourseDetailPage() {
                 İçerik kilitli
               </Text>
               <Text role="body-md" tone="muted" as="p" className={styles.lockedMessage}>
-                Bu kursun içeriğini görüntülemek için kayıt olmalısınız.
+                {course.priceKurus > 0
+                  ? 'Bu kurs ücretlidir. İçeriğe erişmek için satın almalısınız.'
+                  : 'Bu kursun içeriğini görüntülemek için kayıt olmalısınız.'}
               </Text>
-              <Button variant="primary" onClick={enroll} disabled={enrolling}>
-                {enrolling ? 'Kaydediliyor…' : 'Kayıt Ol'}
-              </Button>
+              {course.priceKurus > 0 ? (
+                <PurchaseButton courseId={course.id} priceKurus={course.priceKurus} />
+              ) : (
+                <Button variant="primary" onClick={enroll} disabled={enrolling}>
+                  {enrolling ? 'Kaydediliyor…' : 'Kayıt Ol'}
+                </Button>
+              )}
             </Card>
           )}
 

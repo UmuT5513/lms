@@ -18,6 +18,9 @@ export function registerEnrollmentRoutes(app: FastifyInstance) {
       if (!course || course.status !== 'PUBLISHED') {
         throw new AppError('NOT_FOUND', 'Kurs bulunamadı.', 404);
       }
+      if (course.priceKurus > 0) {
+        throw new AppError('PAYMENT_REQUIRED', 'Bu kurs ücretlidir; kayıt ödeme ile açılır.', 402);
+      }
       const existing = await prisma.enrollment.findUnique({
         where: { userId_courseId: { userId: request.user!.userId, courseId: course.id } },
       });

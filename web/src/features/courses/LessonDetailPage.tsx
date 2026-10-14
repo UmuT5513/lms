@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, Icon, Panel, ProgressBar, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
 import { useCourseDetail } from './useCourseDetail';
+import { PurchaseButton } from '../payments';
 import { useLessonAutoComplete } from './useLessonAutoComplete';
 import { useStudyTracker } from './useStudyTracker';
 import { useMyLessonGrade } from './useMyLessonGrade';
@@ -83,11 +84,17 @@ export function LessonDetailPage() {
             İçerik kilitli
           </Text>
           <Text role="body-md" tone="muted" as="p" className={styles.lockedMessage}>
-            Bu kursun içeriğini görüntülemek için kayıt olmalısınız.
+            {course.priceKurus > 0
+              ? 'Bu kurs ücretlidir. İçeriğe erişmek için satın almalısınız.'
+              : 'Bu kursun içeriğini görüntülemek için kayıt olmalısınız.'}
           </Text>
-          <Button variant="primary" onClick={enroll} disabled={enrolling}>
-            {enrolling ? 'Kaydediliyor…' : 'Kayıt Ol'}
-          </Button>
+          {course.priceKurus > 0 ? (
+            <PurchaseButton courseId={course.id} priceKurus={course.priceKurus} />
+          ) : (
+            <Button variant="primary" onClick={enroll} disabled={enrolling}>
+              {enrolling ? 'Kaydediliyor…' : 'Kayıt Ol'}
+            </Button>
+          )}
         </Card>
       </PageContainer>
     );

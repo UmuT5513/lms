@@ -170,6 +170,8 @@ export interface CourseSummary {
   category: string;
   level: string;
   accessMode: CourseAccessMode;
+  /** Kuruş; 0 = ücretsiz. Yalnızca GET /api/v1/courses yanıtında gelir. */
+  priceKurus?: number;
   /** Yalnızca users/me/courses yanıtında gelir. */
   progress?: CourseProgress;
   instructors?: CourseInstructor[];
@@ -216,6 +218,8 @@ export interface CourseDetail {
   status: string;
   /** Öğrenci bu kursa kayıtlı mı; false ise modules boş döner. */
   isEnrolled: boolean;
+  /** Kuruş; 0 = ücretsiz, > 0 ise kayıt PayTR ödemesiyle açılır. */
+  priceKurus: number;
   modules: CourseModuleSummary[];
   /** Yalnızca isEnrolled true iken gelir. */
   progress?: CourseProgressDetail;

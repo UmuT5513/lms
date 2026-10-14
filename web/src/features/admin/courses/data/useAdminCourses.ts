@@ -14,6 +14,8 @@ export interface AdminCourse {
   tags: string[];
   accessMode: CourseAccessMode;
   status: CourseStatus;
+  /** Kuruş; 0 = ücretsiz. */
+  priceKurus: number;
   instructors?: CourseInstructor[];
 }
 
@@ -25,6 +27,7 @@ export interface CourseInput {
   tags: string[];
   accessMode: CourseAccessMode;
   status?: CourseStatus;
+  priceKurus?: number;
   /** Yalnızca oluşturmada ve yalnızca ADMIN için. */
   instructorIds?: string[];
 }

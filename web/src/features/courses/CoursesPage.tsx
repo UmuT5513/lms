@@ -6,6 +6,8 @@ import { CourseInstructors } from './CourseInstructors';
 import { useCourses } from './useCourses';
 import { useAllCourses } from './useAllCourses';
 import { enrollInCourse } from './enrollInCourse';
+import { PurchaseButton } from '../payments';
+import { formatPrice } from '../../lib/price';
 import styles from './CoursesPage.module.css';
 
 type TabKey = 'enrolled' | 'all';
@@ -173,6 +175,11 @@ export function CoursesPage() {
                         <Badge tone="secondary" variant="soft">
                           {course.accessMode === 'SEQUENTIAL' ? 'Sıralı Erişim' : 'Serbest Erişim'}
                         </Badge>
+                        {course.priceKurus ? (
+                          <Badge tone="brand" variant="soft" icon="sell">
+                            {formatPrice(course.priceKurus)}
+                          </Badge>
+                        ) : null}
                       </div>
                       <CourseInstructors instructors={course.instructors} showEmpty={false} />
                       {enrolled ? (
@@ -182,6 +189,8 @@ export function CoursesPage() {
                         >
                           Devam Et
                         </Button>
+                      ) : course.priceKurus ? (
+                        <PurchaseButton courseId={course.id} priceKurus={course.priceKurus} />
                       ) : (
                         <Button
                           variant="primary"

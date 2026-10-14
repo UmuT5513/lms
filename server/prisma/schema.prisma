@@ -18,52 +18,56 @@ datasource db {
 // allowed literals "VIDEO_YOUTUBE" | "DOCUMENT" | "QUIZ" | "LINK" | "TEXT".
 
 model User {
-  id           String       @id @default(cuid())
-  email        String       @unique
-  passwordHash String
-  name         String
-  avatarUrl    String?
-  locale       String       @default("tr")
-  role         String       @default("STUDENT")
-  roles        String       @default("STUDENT")
+  id                    String             @id @default(cuid())
+  email                 String             @unique
+  passwordHash          String
+  name                  String
+  avatarUrl             String?
+  locale                String             @default("tr")
+  role                  String             @default("STUDENT")
+  roles                 String             @default("STUDENT")
   /// Doluysa hesap devre dışıdır: giriş yapamaz, mevcut token'ları reddedilir.
-  disabledAt   DateTime?
-  createdAt    DateTime     @default(now())
+  disabledAt            DateTime?
+  createdAt             DateTime           @default(now())
   instructorAssignments CourseInstructor[] @relation("InstructorAssignments")
-  enrollments  Enrollment[]
-  lessonProgress LessonProgress[]
-  studyActivity StudyActivity[]
-  quizGradesReceived QuizGrade[] @relation("QuizGradesReceived")
-  quizGradesGiven    QuizGrade[] @relation("QuizGradesGiven")
-  lessonFeedback LessonFeedback[]
-  courseComments CourseComment[] @relation("CourseCommentAuthor")
-  courseCommentReplies CourseComment[] @relation("CourseCommentReplies")
-  calendarEventsCreated CalendarEvent[] @relation("CalendarEventsCreated")
-  announcementsAuthored Announcement[] @relation("AnnouncementsAuthored")
-  questionBanksCreated QuestionBank[] @relation("QuestionBanksCreated")
-  questionsCreated     Question[]     @relation("QuestionsCreated")
-  examsCreated         Exam[]         @relation("ExamsCreated")
-  examCandidacies      ExamCandidate[]
+  enrollments           Enrollment[]
+  lessonProgress        LessonProgress[]
+  studyActivity         StudyActivity[]
+  quizGradesReceived    QuizGrade[]        @relation("QuizGradesReceived")
+  quizGradesGiven       QuizGrade[]        @relation("QuizGradesGiven")
+  lessonFeedback        LessonFeedback[]
+  courseComments        CourseComment[]    @relation("CourseCommentAuthor")
+  courseCommentReplies  CourseComment[]    @relation("CourseCommentReplies")
+  calendarEventsCreated CalendarEvent[]    @relation("CalendarEventsCreated")
+  announcementsAuthored Announcement[]     @relation("AnnouncementsAuthored")
+  questionBanksCreated  QuestionBank[]     @relation("QuestionBanksCreated")
+  questionsCreated      Question[]         @relation("QuestionsCreated")
+  examsCreated          Exam[]             @relation("ExamsCreated")
+  examCandidacies       ExamCandidate[]
+  orders                Order[]
 }
 
 model Course {
-  id          String       @id @default(cuid())
-  title       String
-  description String
-  category    String
-  level       String
-  tags        String       @default("")
-  accessMode  String       @default("FREE")
-  status      String       @default("DRAFT")
-  modules     Module[]
-  enrollments Enrollment[]
-  instructors CourseInstructor[]
-  studyActivity StudyActivity[]
+  id             String             @id @default(cuid())
+  title          String
+  description    String
+  category       String
+  level          String
+  tags           String             @default("")
+  accessMode     String             @default("FREE")
+  status         String             @default("DRAFT")
+  /// Kurs fiyatı (kuruş). 0 = ücretsiz; > 0 ise kayıt yalnızca PayTR ödemesiyle açılır.
+  priceKurus     Int                @default(0)
+  modules        Module[]
+  enrollments    Enrollment[]
+  instructors    CourseInstructor[]
+  studyActivity  StudyActivity[]
   calendarEvents CalendarEvent[]
-  announcements Announcement[]
-  questionBanks QuestionBank[]
-  exams         Exam[]
-  comments      CourseComment[]
+  announcements  Announcement[]
+  questionBanks  QuestionBank[]
+  exams          Exam[]
+  comments       CourseComment[]
+  orders         Order[]
 }
 
 model Module {
@@ -76,18 +80,18 @@ model Module {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
-  moduleId    String
-  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  title       String
-  order       Int
-  status      String   @default("DRAFT")
-  description String?
+  id             String           @id @default(cuid())
+  moduleId       String
+  module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title          String
+  order          Int
+  status         String           @default("DRAFT")
+  description    String?
   // Allowed literals: "VIDEO_YOUTUBE" | "DOCUMENT" | "QUIZ" | "LINK" | "TEXT"
-  contentType String   @default("DOCUMENT")
-  contentUrl  String?
+  contentType    String           @default("DOCUMENT")
+  contentUrl     String?
   lessonProgress LessonProgress[]
-  quizGrades  QuizGrade[]
+  quizGrades     QuizGrade[]
   lessonFeedback LessonFeedback[]
 }
 
@@ -109,20 +113,20 @@ model LessonFeedback {
 }
 
 model CourseComment {
-  id        String   @id @default(cuid())
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation("CourseCommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  id            String    @id @default(cuid())
+  courseId      String
+  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation("CourseCommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
   /// En fazla 1000 karakter; DB zorlamaz, API doğrular.
-  body      String
+  body          String
   /// Kurs sahibinin (eğitmen/admin) tek yanıtı; API tek yanıtı zorlar.
   replyBody     String?
   replyAuthorId String?
   replyAuthor   User?     @relation("CourseCommentReplies", fields: [replyAuthorId], references: [id], onDelete: SetNull)
   repliedAt     DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([courseId, createdAt])
 }
@@ -145,7 +149,7 @@ model NavMenuItem {
   label     String
   icon      String
   order     Int
-  roles     String   // CSV, e.g. "STUDENT,INSTRUCTOR,ADMIN"
+  roles     String // CSV, e.g. "STUDENT,INSTRUCTOR,ADMIN"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -217,23 +221,23 @@ model QuizGrade {
 /// Akademik takvim etkinliği. courseId boşsa genel (herkese görünür) etkinliktir;
 /// doluysa yalnızca kursa kayıtlılar ve kursu yönetenler görür.
 model CalendarEvent {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   description String?
   /// Allowed literals: "lecture" | "lab" | "exam" | "deadline" | "holiday" | "event"
-  type        String   @default("event")
+  type        String    @default("event")
   /// Zamanlı etkinlikte gerçek an (UTC). Tüm gün etkinlikte gün başı UTC 00:00 olarak saklanır.
   start       DateTime
   /// Bitiş (dahil değil). Tüm gün etkinlikte bitiş günü hariç, UTC 00:00.
   end         DateTime?
-  allDay      Boolean  @default(false)
+  allDay      Boolean   @default(false)
   location    String?
   courseId    String?
-  course      Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   createdById String?
-  createdBy   User?    @relation("CalendarEventsCreated", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdBy   User?     @relation("CalendarEventsCreated", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([start])
   @@index([courseId, start])
@@ -375,4 +379,28 @@ model ExamCandidate {
 
   @@unique([examId, userId])
   @@index([userId])
+}
+
+/// PayTR iFrame ödemesi. merchantOid PayTR'a giden benzersiz sipariş no'dur; sonuç bildirimi onunla eşleştirilir.
+model Order {
+  id               String    @id @default(cuid())
+  merchantOid      String    @unique
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  amountKurus      Int
+  /// PENDING | PAID | FAILED
+  status           String    @default("PENDING")
+  /// Müşteriden tahsil edilen tutar; vade farklı taksitte amountKurus'tan büyük olabilir.
+  totalAmountKurus Int?
+  paymentType      String?
+  failedReasonCode String?
+  failedReasonMsg  String?
+  testMode         Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  paidAt           DateTime?
+
+  @@index([userId])
+  @@index([courseId])
 }

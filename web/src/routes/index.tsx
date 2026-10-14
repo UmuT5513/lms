@@ -11,6 +11,7 @@ import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
 import { LoginPage, RegisterPage } from '../features/auth';
 import { ProfilePage } from '../features/profile';
+import { CheckoutPage, PaymentResultPage } from '../features/payments';
 import {
   AdminCoursesPage,
   CourseStudentsPage,
@@ -57,6 +58,8 @@ export const router = createBrowserRouter([
           { path: 'notlar-ve-gorevler', element: <AssignmentsPage /> },
           { path: 'sinavlar', element: <ExamsPage /> },
           { path: 'profil', element: <ProfilePage /> },
+          { path: 'odeme/sonuc', element: <PaymentResultPage /> },
+          { path: 'odeme/:courseId', element: <CheckoutPage /> },
           {
             element: <RequireRole allow={['ADMIN']} />,
             children: [

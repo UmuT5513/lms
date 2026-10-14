@@ -15,7 +15,7 @@ Aşağıdaki varsayımlar, gereksinimlerin yazılabilmesi için alınmış ön k
 | V2 | Arayüz dili öncelikli olarak Türkçedir, çoklu dil altyapısı hazırlanır. |
 | V3 | Canlı ders (senkron video) üçüncü taraf servis ile tümleştirilir, platform içinde geliştirilmez. |
 | V4 | Yapay zekâ asistanı harici bir LLM sağlayıcısı üzerinden, RAG mimarisiyle çalışır. |
-| V5 | Ödeme ve satış süreci kapsam dışıdır; kurs kaydı yönetici ataması veya açık kayıt ile yapılır. |
+| V5 | Ücretli kurslar PayTR iFrame API ile tek seferlik ödemeyle satılır; ödeme onaylanınca kayıt otomatik açılır. Ücretsiz kurslarda kayıt yönetici ataması veya açık kayıt ile yapılır. İade ve abonelik kapsam dışıdır. |
 | V6 | Uygulama tek makinede (yerel sunucu/masaüstü) çalışacak şekilde tasarlanır; çok sunuculu/bulut dağıtımı kapsam dışıdır. |
 | V7 | Eşzamanlı kullanıcı sayısı küçüktür (bir sınıf/kurum ölçeği, onlarca kullanıcı); binlerce eşzamanlı kullanıcı hedeflenmez. |
 
