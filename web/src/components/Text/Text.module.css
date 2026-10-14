@@ -1,7 +1,7 @@
 .tone-default { color: var(--color-on-surface); }
 .tone-muted { color: var(--color-text-muted); }
 .tone-main { color: var(--color-text-main); }
-.tone-navy { color: var(--color-brand-navy-deep); }
+.tone-navy { color: var(--color-primary); }
 .tone-primary { color: var(--color-primary); }
 .tone-secondary { color: var(--color-secondary); }
 .tone-cyan { color: var(--color-cyan-accent); }

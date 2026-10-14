@@ -244,6 +244,24 @@ export interface LessonFeedback {
   mine: MyLessonFeedback;
 }
 
+export interface CourseComment {
+  id: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  author: { id: string; name: string; avatarUrl: string | null };
+  canDelete: boolean;
+  reply: CourseCommentReply | null;
+  canReply: boolean;
+  canDeleteReply: boolean;
+}
+
+export interface CourseCommentReply {
+  body: string;
+  createdAt: string;
+  author: { id: string; name: string; avatarUrl: string | null };
+}
+
 /** Takvim etkinliği türü; renk ve simge bu türe göre seçilir. */
 export type CalendarEventType = 'lecture' | 'lab' | 'exam' | 'deadline' | 'holiday' | 'event';
 

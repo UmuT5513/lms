@@ -1,0 +1,44 @@
+.group {
+  display: inline-flex;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-container);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border: none;
+  border-radius: var(--radius-default);
+  background-color: transparent;
+  color: var(--color-on-surface-variant);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.option:hover {
+  color: var(--color-on-surface);
+}
+
+.option:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.active,
+.active:hover {
+  background-color: var(--color-surface-card);
+  color: var(--color-secondary);
+  box-shadow: var(--elevation-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option {
+    transition: none;
+  }
+}

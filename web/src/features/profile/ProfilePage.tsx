@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Text } from '../../components';
+import { Button, Card, Text, ThemeSelector } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
 import { useProfileData } from '../../data/useProfileData';
 import { ProfileHeader, ProfileEditForm } from './components';
@@ -49,6 +49,15 @@ export function ProfilePage() {
                 <Text role="body-md" tone="main">
                   {localeLabels[profile.locale] ?? profile.locale}
                 </Text>
+              </div>
+
+              <div className={styles.detailRow}>
+                <Text role="label-md" tone="muted">
+                  Tema
+                </Text>
+                <div>
+                  <ThemeSelector />
+                </div>
               </div>
 
               <div className={styles.actions}>

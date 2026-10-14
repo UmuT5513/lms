@@ -15,6 +15,8 @@
  */
 
 :root {
+  color-scheme: light;
+
   /* ---- Material rol renkleri ---- */
   --color-surface: #f8f9ff;
   --color-surface-dim: #cbdbf5;
@@ -84,6 +86,7 @@
   --color-state-error: #dc2626;
   --color-state-info: #2563eb;
   --color-ai-assistant-tint: #f0fdfa;
+  --color-state-error-hover: #93000a;
 
   /*
    * RGB kanal token'ları. Bir rengin saydam varyantına ihtiyaç duyulduğunda
@@ -91,6 +94,9 @@
    * Değerler yukarıdaki hex token'larla aynı renklerdir.
    */
   --rgb-white: 255 255 255;
+  --rgb-black: 0 0 0;
+  --rgb-chrome: 255 255 255;
+  --rgb-shadow: 15 43 92;
   --rgb-primary: 0 22 61;
   --rgb-primary-container: 15 43 92;
   --rgb-secondary: 0 99 152;
@@ -110,7 +116,7 @@
   --color-glass: rgb(var(--rgb-white) / 0.15);
   --color-glass-dim: rgb(var(--rgb-white) / 0.1);
   --color-glass-faint: rgb(var(--rgb-white) / 0.2);
-  --color-chrome-translucent: rgb(var(--rgb-white) / 0.9);
+  --color-chrome-translucent: rgb(var(--rgb-chrome) / 0.9);
   --color-navy-translucent: rgb(var(--rgb-brand-navy-deep) / 0.9);
 
   /* ---- Yarıçap ---- */
@@ -133,10 +139,10 @@
   --margin-mobile: 1rem;
 
   /* ---- Yükselti (DESIGN.md "Elevation") ---- */
-  --elevation-1: 0 1px 3px 0 rgb(var(--rgb-primary-container) / 0.04), 0 1px 2px -1px rgb(var(--rgb-primary-container) / 0.04);
-  --elevation-2: 0 4px 6px -1px rgb(var(--rgb-primary-container) / 0.07), 0 2px 4px -2px rgb(var(--rgb-primary-container) / 0.05);
-  --elevation-3: 0 20px 25px -5px rgb(var(--rgb-primary-container) / 0.12), 0 8px 10px -6px rgb(var(--rgb-primary-container) / 0.08);
-  --elevation-chrome: 0 1px 8px rgba(0, 0, 0, 0.04);
+  --elevation-1: 0 1px 3px 0 rgb(var(--rgb-shadow) / 0.04), 0 1px 2px -1px rgb(var(--rgb-shadow) / 0.04);
+  --elevation-2: 0 4px 6px -1px rgb(var(--rgb-shadow) / 0.07), 0 2px 4px -2px rgb(var(--rgb-shadow) / 0.05);
+  --elevation-3: 0 20px 25px -5px rgb(var(--rgb-shadow) / 0.12), 0 8px 10px -6px rgb(var(--rgb-shadow) / 0.08);
+  --elevation-chrome: 0 1px 8px rgb(var(--rgb-black) / 0.04);
   --scrim: rgb(15 23 42 / 0.45);
 
   /* ---- Odak halkası (NFR-30) ---- */
@@ -154,4 +160,73 @@
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 500ms ease;
+}
+
+/*
+ * Koyu tema. JS, <html data-theme="light|dark"> değerini çözer ("Sistem" → matchMedia).
+ * `*-fixed*` token'ları, `on-primary`, `brand-navy-deep`, `primary-container` ve dolgu
+ * olarak kullanılan success/warning/cyan değerleri bilerek iki temada da aynıdır:
+ * koyu dolgu üzerinde beyaz metin (banner, sidebar aktif öğe, rozetler) olarak kullanılırlar.
+ * Metin rengi olarak kullanılan `primary`/`secondary` ise koyu temada açık tonlara döner.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-surface: #0b1220;
+  --color-surface-dim: #0b1220;
+  --color-surface-bright: #1c2538;
+  --color-surface-container-lowest: #0e1626;
+  --color-surface-container-low: #121a2b;
+  --color-surface-container: #172034;
+  --color-surface-container-high: #1f293f;
+  --color-surface-container-highest: #2a354c;
+  --color-on-surface: #e2e8f5;
+  --color-on-surface-variant: #b4bccb;
+  --color-inverse-surface: #e2e8f5;
+  --color-inverse-on-surface: #1a2438;
+  --color-outline: #8a92a3;
+  --color-outline-variant: #343e52;
+  --color-surface-tint: #afc6ff;
+
+  --color-primary: #afc6ff;
+  --color-primary-container: #1d3a73;
+  --color-on-primary-container: #d9e2ff;
+  --color-inverse-primary: #465d91;
+
+  --color-secondary: #4db3f5;
+  --color-on-secondary: #00263d;
+  --color-secondary-container: #004b73;
+  --color-on-secondary-container: #cce5ff;
+
+  --color-tertiary: #4cd7f6;
+  --color-on-tertiary: #00363f;
+  --color-tertiary-container: #004e5c;
+  --color-on-tertiary-container: #acedff;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #5c1a17;
+  --color-on-error-container: #ffdad6;
+
+  --color-background: #0b1220;
+  --color-on-background: #e2e8f5;
+  --color-surface-variant: #2a354c;
+
+  --color-canvas-bg: #080e1a;
+  --color-surface-card: #121a2b;
+  --color-border-subtle: #26324a;
+  --color-text-main: #e6ebf5;
+  --color-text-muted: #9aa6bb;
+  --color-electric-blue-hover: #7cc4ff;
+  --color-state-error: #ef4444;
+  --color-state-error-hover: #dc2626;
+  --color-state-info: #3b82f6;
+  --color-ai-assistant-tint: #0f2a33;
+
+  --rgb-chrome: 11 18 32;
+  --rgb-shadow: 0 0 0;
+  --rgb-secondary: 77 179 245;
+  --rgb-state-error: 239 68 68;
+
+  --elevation-chrome: 0 1px 8px rgb(var(--rgb-black) / 0.4);
+  --scrim: rgb(var(--rgb-black) / 0.65);
 }

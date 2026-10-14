@@ -371,6 +371,59 @@ Body (kısmi): `{ "liked"?: boolean, "rating"?: integer 1..5 | null }`
 200: yukarıdaki yanıt (yeniden hesaplanmış)
 400/401/403/404: yukarıdaki hata biçimleriyle
 
+## Course Comments (Kurs yorumları)
+
+Saklama: `CourseComment` tablosu (kurs, kullanıcı, `body` düz metin). Kurs veya kullanıcı silinirse yorumlar da silinir. Taslak kurs yalnızca ADMIN / kursa atanmış INSTRUCTOR için görünür; diğerleri için `404 COURSE_NOT_FOUND`.
+
+Yorum nesnesi:
+```json
+{
+  "id": "string",
+  "body": "string",
+  "createdAt": "2026-10-14T09:00:00.000Z",
+  "updatedAt": "2026-10-14T09:00:00.000Z",
+  "author": { "id": "string", "name": "string", "avatarUrl": "string | null" },
+  "canDelete": true,
+  "reply": { "body": "string", "createdAt": "ISO", "author": { "id": "string", "name": "string", "avatarUrl": "string | null" } },
+  "canReply": false,
+  "canDeleteReply": false
+}
+```
+`canDelete`: çağıran yorumun yazarı VEYA ADMIN ise `true`. `author` e-posta içermez.
+`reply`: yanıt yoksa `null`; yanıtı yazan kullanıcı silinmişse `author` = `{ "id": "", "name": "Silinmiş kullanıcı", "avatarUrl": null }`. `canReply`: çağıran kursa atanmış INSTRUCTOR veya ADMIN ise `true`. `canDeleteReply`: `canReply` ve yanıt var.
+
+### GET /api/v1/courses/:courseId/comments
+Header: `Authorization: Bearer <token>` (giriş yapmış herhangi bir rol)
+200: `{ "comments": [ <yorum>, ... ] }` (en yeni önce)
+401: `{ "error": { "code": "UNAUTHORIZED", "message": "Giriş yapmanız gerekiyor." } }`
+404: `{ "error": { "code": "COURSE_NOT_FOUND", "message": "Kurs bulunamadı." } }`
+
+### POST /api/v1/courses/:courseId/comments
+Header: `Authorization: Bearer <token>` (yetki: kursa kayıtlı kullanıcı, kursa atanmış INSTRUCTOR veya ADMIN)
+Body: `{ "body": string }` — kırpılır, 1–1000 karakter olmalıdır; aksi halde 400 `VALIDATION_ERROR`.
+201: `{ "comment": <yorum> }`
+400: `{ "error": { "code": "VALIDATION_ERROR", "message": "Yorum 1 ile 1000 karakter arasında olmalıdır." } }`
+403: `{ "error": { "code": "NOT_ENROLLED", "message": "Yorum yapmak için kursa kayıtlı olmalısınız." } }`
+401/404: yukarıdaki hata biçimleriyle
+
+### DELETE /api/v1/courses/:courseId/comments/:commentId
+Header: `Authorization: Bearer <token>` (yetki: yorumun yazarı veya ADMIN)
+204: gövde yok
+403: `{ "error": { "code": "FORBIDDEN", "message": "Bu yorumu silme yetkiniz yok." } }`
+404: `{ "error": { "code": "COMMENT_NOT_FOUND", "message": "Yorum bulunamadı." } }` (yorum yok veya başka kursa ait)
+401: yukarıdaki biçimle
+
+### PUT /api/v1/courses/:courseId/comments/:commentId/reply
+Header: `Authorization: Bearer <token>` (yetki: kursa atanmış INSTRUCTOR veya ADMIN). Yanıtı oluşturur veya değiştirir.
+Body: `{ "body": string }` — kırpılır, 1–1000 karakter; aksi halde 400 `VALIDATION_ERROR`.
+200: `{ "comment": <yorum> }`
+403: `{ "error": { "code": "FORBIDDEN", "message": "Bu yoruma yanıt verme yetkiniz yok." } }`
+404: `COURSE_NOT_FOUND` / `COMMENT_NOT_FOUND` (yorum yok veya başka kursa ait)
+
+### DELETE /api/v1/courses/:courseId/comments/:commentId/reply
+Aynı yetki. 200: `{ "comment": <yorum, reply=null> }`
+404: `{ "error": { "code": "REPLY_NOT_FOUND", "message": "Yanıt bulunamadı." } }` (ayrıca `COMMENT_NOT_FOUND`); 403 `FORBIDDEN`
+
 ## Calendar (Akademik takvim)
 
 Saklama: `CalendarEvent` tablosu. `courseId` null ise genel etkinliktir (herkes görür); doluysa kursa aittir. Kurs silinirse etkinlikleri de silinir; oluşturan kullanıcı silinirse `createdById` null olur. `type`: `lecture` | `lab` | `exam` | `deadline` | `holiday` | `event` (varsayılan `event`).
