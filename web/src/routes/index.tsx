@@ -9,7 +9,7 @@ import { CoursesPage, CourseDetailPage, LessonDetailPage } from '../features/cou
 import { AnnouncementsPage, AnnouncementDetailPage, AnnouncementsAdminPage } from '../features/announcements';
 import { AssignmentsPage } from '../features/assignments';
 import { ExamsPage } from '../features/exams';
-import { LoginPage, RegisterPage } from '../features/auth';
+import { LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage } from '../features/auth';
 import { ProfilePage } from '../features/profile';
 import {
   AdminCoursesPage,
@@ -96,6 +96,8 @@ export const router = createBrowserRouter([
     children: [
       { path: 'giris', element: <LoginPage /> },
       { path: 'kayit', element: <RegisterPage /> },
+      { path: 'sifremi-unuttum', element: <ForgotPasswordPage /> },
+      { path: 'sifre-sifirla', element: <ResetPasswordPage /> },
     ],
   },
 ]);

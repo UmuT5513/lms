@@ -42,6 +42,20 @@ model User {
   questionsCreated     Question[]     @relation("QuestionsCreated")
   examsCreated         Exam[]         @relation("ExamsCreated")
   examCandidacies      ExamCandidate[]
+  passwordResetTokens  PasswordResetToken[]
+}
+
+/// Şifre sıfırlama bağlantısı; ham token saklanmaz, yalnızca SHA-256 özeti.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model Course {

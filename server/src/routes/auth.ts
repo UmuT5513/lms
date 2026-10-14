@@ -1,11 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 import bcrypt from 'bcrypt';
+import { createHash, randomBytes } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
 import { signToken, type TokenPayload } from '../lib/jwt.js';
 import { requireAuth } from '../middleware/rbac.js';
 import { AppError } from '../errors.js';
 import { toPublicUser } from '../lib/publicUser.js';
 import { parseRoles } from '../lib/users.js';
+import { sendPasswordResetEmail } from '../lib/mailer.js';
 
 interface RegisterBody {
   email: string;
@@ -17,6 +19,18 @@ interface LoginBody {
   email: string;
   password: string;
 }
+
+interface ForgotPasswordBody {
+  email: string;
+}
+
+interface ResetPasswordBody {
+  token: string;
+  password: string;
+}
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
 
 interface SwitchRoleBody {
   role: TokenPayload['role'];
@@ -64,6 +78,52 @@ export function registerAuthRoutes(app: FastifyInstance) {
     const roles = parseRoles(user);
     const token = signToken({ userId: user.id, role: user.role as TokenPayload['role'], roles });
     return { user: toPublicUser(user), token };
+  });
+
+  app.post<{ Body: ForgotPasswordBody }>('/api/v1/auth/forgot-password', async (request) => {
+    const email = typeof request.body?.email === 'string' ? request.body.email.trim() : '';
+    const user = email ? await prisma.user.findUnique({ where: { email } }) : null;
+
+    if (user && !user.disabledAt) {
+      const token = randomBytes(32).toString('hex');
+      await prisma.$transaction([
+        prisma.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } }),
+        prisma.passwordResetToken.create({
+          data: {
+            userId: user.id,
+            tokenHash: hashToken(token),
+            expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+          },
+        }),
+      ]);
+      const base = process.env.WEB_BASE_URL ?? 'http://localhost:5173';
+      await sendPasswordResetEmail(user.email, `${base}/sifre-sifirla?token=${token}`, request.log);
+    }
+
+    // Hesap var/yok fark etmeksizin aynı yanıt: hesabın varlığı sızmaz.
+    return { ok: true };
+  });
+
+  app.post<{ Body: ResetPasswordBody }>('/api/v1/auth/reset-password', async (request) => {
+    const { token, password } = request.body ?? {};
+    if (typeof password !== 'string' || password.length < 8) {
+      throw new AppError('WEAK_PASSWORD', 'Şifre en az 8 karakter olmalıdır.', 400);
+    }
+    const invalid = () =>
+      new AppError('INVALID_RESET_TOKEN', 'Sıfırlama bağlantısı geçersiz veya süresi dolmuş.', 400);
+    if (typeof token !== 'string' || !token) throw invalid();
+
+    const record = await prisma.passwordResetToken.findUnique({
+      where: { tokenHash: hashToken(token) },
+    });
+    if (!record || record.usedAt || record.expiresAt < new Date()) throw invalid();
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: record.userId }, data: { passwordHash } }),
+      prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+    ]);
+    return { ok: true };
   });
 
   app.get(

@@ -41,6 +41,9 @@ export function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+      <Text role="body-sm">
+        <Link to="/sifremi-unuttum">Şifremi unuttum</Link>
+      </Text>
       {error && (
         <Text role="body-sm" tone="error" className={styles.error}>
           {error}
