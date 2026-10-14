@@ -143,4 +143,9 @@
   .userText {
     display: none;
   }
+
+  /* Dar ekranda yer açmak için tema seçici profil sayfasında sunulur. */
+  .theme {
+    display: none;
+  }
 }

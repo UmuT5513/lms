@@ -21,4 +21,5 @@ export type { TextRole, TextTone } from './Text';
 export { Dialog } from './Dialog';
 export type { DialogSize } from './Dialog';
 export { formStyles } from './Form';
+export { ThemeSelector } from './ThemeSelector';
 export { ConfirmDialog } from './ConfirmDialog';

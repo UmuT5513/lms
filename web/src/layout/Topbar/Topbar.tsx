@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, Icon, IconButton, SearchInput, Text } from '../../components';
+import { Avatar, Icon, IconButton, SearchInput, Text, ThemeSelector } from '../../components';
 import { useAuth } from '../../data/useAuth';
 import type { UserProfile, UserRole } from '../../types';
 import styles from './Topbar.module.css';
@@ -92,6 +92,9 @@ export function Topbar({ user, switchRole, onMenuToggle, isMenuOpen }: TopbarPro
       </div>
 
       <div className={styles.actions}>
+        <div className={styles.theme}>
+          <ThemeSelector compact />
+        </div>
         <IconButton icon="notifications" label="Bildirimler" showDot />
         <IconButton icon="chat_bubble" label="Mesajlar" />
         <span className={styles.divider} aria-hidden="true" />

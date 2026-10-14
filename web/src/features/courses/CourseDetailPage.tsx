@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Badge, Button, Card, Icon, Panel, ProgressBar, Text } from '../../components';
 import { PageContainer } from '../../layout/PageContainer';
 import { useCurrentUser } from '../../data/useCurrentUser';
+import { CourseComments } from './CourseComments';
 import { CourseInstructors } from './CourseInstructors';
 import { useCourseDetail } from './useCourseDetail';
 import { CONTENT_TYPE_BADGE_TONES, CONTENT_TYPE_ICONS, CONTENT_TYPE_LABELS } from './contentType';
@@ -187,6 +188,8 @@ export function CourseDetailPage() {
               </div>
             </Panel>
           )}
+
+          {(course.isEnrolled || canManage) && <CourseComments courseId={course.id} />}
         </>
       )}
     </PageContainer>

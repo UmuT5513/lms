@@ -6,7 +6,7 @@
   height: 2rem;
   overflow: hidden;
   border-radius: var(--radius-full);
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-container);
   color: var(--color-on-primary);
 }
 

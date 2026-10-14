@@ -36,6 +36,8 @@ model User {
   quizGradesReceived QuizGrade[] @relation("QuizGradesReceived")
   quizGradesGiven    QuizGrade[] @relation("QuizGradesGiven")
   lessonFeedback LessonFeedback[]
+  courseComments CourseComment[] @relation("CourseCommentAuthor")
+  courseCommentReplies CourseComment[] @relation("CourseCommentReplies")
   calendarEventsCreated CalendarEvent[] @relation("CalendarEventsCreated")
   announcementsAuthored Announcement[] @relation("AnnouncementsAuthored")
   questionBanksCreated QuestionBank[] @relation("QuestionBanksCreated")
@@ -61,6 +63,7 @@ model Course {
   announcements Announcement[]
   questionBanks QuestionBank[]
   exams         Exam[]
+  comments      CourseComment[]
 }
 
 model Module {
@@ -103,6 +106,25 @@ model LessonFeedback {
 
   @@unique([userId, lessonId])
   @@index([lessonId])
+}
+
+model CourseComment {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("CourseCommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  /// En fazla 1000 karakter; DB zorlamaz, API doğrular.
+  body      String
+  /// Kurs sahibinin (eğitmen/admin) tek yanıtı; API tek yanıtı zorlar.
+  replyBody     String?
+  replyAuthorId String?
+  replyAuthor   User?     @relation("CourseCommentReplies", fields: [replyAuthorId], references: [id], onDelete: SetNull)
+  repliedAt     DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId, createdAt])
 }
 
 model LessonProgress {
